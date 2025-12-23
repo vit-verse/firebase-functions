@@ -7,7 +7,7 @@ initializeApp();
 export const sendLostFoundNotification = onCall(
   {
     region: "us-central1",
-    enforceAppCheck: true,
+    // enforceAppCheck: true,
   },
   async (request) => {
     const {
@@ -27,17 +27,23 @@ export const sendLostFoundNotification = onCall(
       throw new Error("Payload too large");
     }
 
+    const notification: {title: string; body: string; imageUrl?: string} = {
+      title,
+      body: message,
+    };
+
+    if (imageUrl) {
+      notification.imageUrl = imageUrl;
+    }
+
     await getMessaging().send({
       topic: "lost_found_update",
-      notification: {
-        title,
-        body: message,
-        imageUrl,
-      },
+      notification,
       data: {
         type: type ?? "",
         itemName: itemName ?? "",
         place: place ?? "",
+        imageUrl: imageUrl ?? "",
       },
       android: {
         priority: "high",

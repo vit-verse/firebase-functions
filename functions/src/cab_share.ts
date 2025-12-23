@@ -7,7 +7,7 @@ initializeApp();
 export const sendCabShareNotification = onCall(
   {
     region: "us-central1",
-    enforceAppCheck: true,
+    // enforceAppCheck: true,
   },
   async (request) => {
     const {
@@ -24,9 +24,10 @@ export const sendCabShareNotification = onCall(
       throw new Error("Invalid payload");
     }
 
+    // Build body parts, filtering out empty values
+    const bodyParts = [cabType, travelDate, travelTime].filter(Boolean);
     const formattedBody =
-      `${fromLocation} → ${toLocation}\n` +
-      `${cabType ?? ""} | ${travelDate ?? ""} | ${travelTime ?? ""}`;
+      `${fromLocation} to ${toLocation}\n${bodyParts.join(" | ")}`;
 
     await getMessaging().send({
       topic: "cab_share_updates",
